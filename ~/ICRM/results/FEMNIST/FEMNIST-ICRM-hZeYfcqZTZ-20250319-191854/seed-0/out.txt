@@ -1,0 +1,54 @@
+=> Environment:
+	Python: 3.8.20
+	PyTorch: 2.0.0+cu117
+	Torchvision: 0.15.0+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.24.4
+	PIL: 10.4.0
+=> HParams:
+	additonal_metrics: ['worst_group', 'average']
+	batch_size: 100
+	beta1: 0.5
+	context_length: 100
+	data_augmentation: True
+	densenet121: False
+	device: cuda
+	freeze_bn: 1
+	is_iid_tr: 0
+	is_parallel: True
+	is_supervised: 0
+	is_transformer: 0
+	loss: cross_entropy
+	lr: 0.0001
+	metrics: ['acc']
+	n_embd: 132
+	n_head: 3
+	n_layer: 12
+	n_sampled_tasks: 10
+	nonlinear_classifier: False
+	num_features: 1
+	optimizer_name: Adam
+	output_dir: ~/ICRM/results/FEMNIST/FEMNIST-ICRM-hZeYfcqZTZ-20250319-191854/seed-0
+	overall_seed: 0
+	print_last: 1
+	resnet18: False
+	resnet_dropout: 0
+	terminal_command: /data/healthy-ml/scratch/odahleh/mimic-mil/main.py --data_dir=./data/ --algorithm ICRM --dataset FEMNIST
+	test_batch_size: 100
+	trial_seed: 0
+	weight_decay: 0.0
+=> Seed of the run set to 0
+=> Creating dataset object...
+Traceback (most recent call last):
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/main.py", line 143, in <module>
+    dataset = getattr(dataset_file, args.dataset)(args.data_dir, args.test_envs, hparams)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/dataset.py", line 102, in __init__
+    clients, _ , self.data = utils.read_dir(self.root_dir)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/utils.py", line 414, in read_dir
+    files = os.listdir(data_dir)
+FileNotFoundError: [Errno 2] No such file or directory: 'data/femnist-data/train'

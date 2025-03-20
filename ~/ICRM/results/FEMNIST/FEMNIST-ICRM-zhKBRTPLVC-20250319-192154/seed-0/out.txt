@@ -1,0 +1,82 @@
+=> Environment:
+	Python: 3.8.20
+	PyTorch: 2.0.0+cu117
+	Torchvision: 0.15.0+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.24.4
+	PIL: 10.4.0
+=> HParams:
+	additonal_metrics: ['worst_group', 'average']
+	batch_size: 100
+	beta1: 0.5
+	context_length: 100
+	data_augmentation: True
+	densenet121: False
+	device: cuda
+	freeze_bn: 1
+	is_iid_tr: 0
+	is_parallel: True
+	is_supervised: 0
+	is_transformer: 0
+	loss: cross_entropy
+	lr: 0.0001
+	metrics: ['acc']
+	n_embd: 132
+	n_head: 3
+	n_layer: 12
+	n_sampled_tasks: 10
+	nonlinear_classifier: False
+	num_features: 1
+	optimizer_name: Adam
+	output_dir: ~/ICRM/results/FEMNIST/FEMNIST-ICRM-zhKBRTPLVC-20250319-192154/seed-0
+	overall_seed: 0
+	print_last: 1
+	resnet18: False
+	resnet_dropout: 0
+	terminal_command: /data/healthy-ml/scratch/odahleh/mimic-mil/main.py --data_dir=. --algorithm ICRM --dataset FEMNIST
+	test_batch_size: 100
+	trial_seed: 0
+	weight_decay: 0.0
+=> Seed of the run set to 0
+=> Creating dataset object...
+=> n training domains:  262
+=> Smallest domain:  104
+=> Largest domain:  443 
+
+=> n validation domains:  50
+=> Smallest domain:  119
+=> Largest domain:  184 
+
+=> n testing domains:  35
+=> Smallest domain:  140
+=> Largest domain:  420 
+
+=> Dataset object created successfully
+=> Creating training data loaders...
+=> Number of environments: 262
+=> Environment sizes: [384, 348, 429, 333, 188, 424, 397, 422, 376, 438, 135, 396, 443, 350, 405, 311, 370, 330, 402, 347, 363, 434, 213, 119, 346, 374, 394, 360, 383, 380, 427, 322, 370, 347, 361, 351, 222, 403, 413, 415, 386, 339, 349, 367, 181, 241, 236, 251, 326, 325, 331, 335, 296, 321, 295, 281, 397, 329, 356, 252, 235, 368, 342, 404, 257, 344, 426, 215, 233, 301, 291, 332, 325, 347, 207, 398, 332, 378, 329, 407, 188, 334, 266, 394, 414, 229, 130, 420, 352, 291, 256, 301, 143, 367, 259, 278, 183, 288, 286, 298, 259, 156, 296, 256, 286, 345, 198, 309, 327, 388, 302, 356, 400, 183, 302, 187, 213, 271, 213, 276, 176, 337, 329, 169, 327, 244, 208, 203, 242, 281, 234, 325, 217, 217, 352, 235, 168, 108, 180, 176, 172, 129, 181, 164, 114, 173, 153, 148, 180, 164, 145, 160, 176, 143, 175, 139, 127, 156, 154, 126, 126, 143, 109, 174, 161, 162, 177, 169, 131, 175, 147, 175, 153, 150, 181, 176, 156, 158, 173, 167, 137, 160, 135, 149, 179, 159, 160, 178, 172, 182, 172, 172, 147, 170, 167, 172, 171, 159, 174, 179, 178, 178, 154, 117, 115, 144, 166, 163, 173, 174, 134, 176, 142, 169, 177, 183, 175, 177, 159, 182, 180, 177, 182, 179, 168, 170, 156, 152, 179, 184, 136, 172, 182, 179, 163, 180, 184, 181, 160, 183, 179, 182, 176, 168, 176, 166, 173, 175, 156, 165, 182, 177, 104, 168, 173, 169, 170, 136, 182, 177, 166, 175]
+=> Batch size: 100
+=> Number of workers: 0
+=> All training loaders created successfully
+=> Creating validation data loaders...
+=> Validation loaders created successfully
+instantiating algorithm
+=> Initializing a GPT2 Transformer...
+=> Using data parallel
+training
+=> Checkpointing based on acc(e-0)
+step             step_time        train_acc        train_loss       wo_va_acc(e-100  wo_va_acc(e-75)  wo_va_acc(e-50)  wo_va_acc(e-25)  wo_va_acc(e-0)   avg_va_acc(e-10  avg_va_acc(e-75  avg_va_acc(e-50  avg_va_acc(e-25  avg_va_acc(e-0)  wo_te_acc(e-100  wo_te_acc(e-75)  wo_te_acc(e-50)  wo_te_acc(e-25)  wo_te_acc(e-0)   avg_te_acc(e-10  avg_te_acc(e-75  avg_te_acc(e-50  avg_te_acc(e-25  avg_te_acc(e-0)  best_va          best_te         
+0                0.0003           0.0470           4.5980           0.0000           0.0200           0.0400           0.0200           0.0200           0.0774           0.0698           0.0744           0.0702           0.0688           0.0100           0.0200           0.0150           0.0150           0.0100           0.0515           0.0546           0.0545           0.0559           0.0535           0.0688           0.0535          
+Traceback (most recent call last):
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/main.py", line 219, in <module>
+    step_metrics = algorithm.update(minibatches_device)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 88, in update
+    out = self.predict(x, y)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 290, in predict
+    y = y.reshape(bs, ctxt)
+RuntimeError: shape '[0, 100]' is invalid for input of size 52

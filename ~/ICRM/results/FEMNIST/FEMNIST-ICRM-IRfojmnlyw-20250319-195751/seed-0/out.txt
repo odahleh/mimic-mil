@@ -1,0 +1,82 @@
+=> Environment:
+	Python: 3.8.20
+	PyTorch: 2.0.0+cu117
+	Torchvision: 0.15.0+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.24.4
+	PIL: 10.4.0
+=> HParams:
+	additonal_metrics: ['worst_group', 'average']
+	batch_size: 100
+	beta1: 0.5
+	context_length: 100
+	data_augmentation: True
+	densenet121: False
+	device: cuda
+	freeze_bn: 1
+	is_iid_tr: 0
+	is_parallel: True
+	is_supervised: 0
+	is_transformer: 0
+	loss: cross_entropy
+	lr: 0.0001
+	metrics: ['acc']
+	n_embd: 128
+	n_head: 4
+	n_layer: 12
+	n_sampled_tasks: 10
+	nonlinear_classifier: False
+	num_features: 1
+	optimizer_name: Adam
+	output_dir: ~/ICRM/results/FEMNIST/FEMNIST-ICRM-IRfojmnlyw-20250319-195751/seed-0
+	overall_seed: 0
+	print_last: 1
+	resnet18: False
+	resnet_dropout: 0
+	terminal_command: /data/healthy-ml/scratch/odahleh/mimic-mil/main.py --data_dir=. --algorithm ICRM --dataset FEMNIST
+	test_batch_size: 100
+	trial_seed: 0
+	weight_decay: 0.0
+=> Seed of the run set to 0
+=> n training domains:  262
+=> Smallest domain:  104
+=> Largest domain:  443 
+
+=> n validation domains:  50
+=> Smallest domain:  119
+=> Largest domain:  184 
+
+=> n testing domains:  35
+=> Smallest domain:  140
+=> Largest domain:  420 
+
+=> Initializing a GPT2 Transformer...
+=> Using data parallel
+=> Checkpointing based on acc(e-0)
+step             step_time        train_acc        train_loss       wo_va_acc(e-100  wo_va_acc(e-75)  wo_va_acc(e-50)  wo_va_acc(e-25)  wo_va_acc(e-0)   avg_va_acc(e-10  avg_va_acc(e-75  avg_va_acc(e-50  avg_va_acc(e-25  avg_va_acc(e-0)  wo_te_acc(e-100  wo_te_acc(e-75)  wo_te_acc(e-50)  wo_te_acc(e-25)  wo_te_acc(e-0)   avg_te_acc(e-10  avg_te_acc(e-75  avg_te_acc(e-50  avg_te_acc(e-25  avg_te_acc(e-0)  best_va          best_te         
+0                0.0003           0.0310           4.6353           0.0000           0.0000           0.0000           0.0000           0.0000           0.0056           0.0060           0.0060           0.0060           0.0056           0.0000           0.0000           0.0000           0.0000           0.0000           0.0035           0.0289           0.0265           0.0204           0.0282           0.0056           0.0282          
+50               0.0010           0.4740           2.2348           0.1500           0.2700           0.2600           0.2500           0.2000           0.4070           0.5488           0.5454           0.5498           0.5460           0.2375           0.2300           0.2200           0.2500           0.2400           0.4059           0.4962           0.5145           0.5091           0.5021           0.5460           0.5021          
+100              0.0006           0.6920           1.1888           0.3300           0.3800           0.4100           0.3900           0.4100           0.5096           0.6640           0.6622           0.6770           0.6574           0.3100           0.4100           0.4500           0.4300           0.4400           0.5277           0.6487           0.6519           0.6581           0.6513           0.6574           0.6513          
+Traceback (most recent call last):
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/main.py", line 189, in <module>
+    minibatches_device = [(x.to(device), y.to(device)) for x,y in next(train_minibatches_iterator)] # contains (x(e),y(e)) for all e where (x,y) are batches
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/utils.py", line 181, in __iter__
+    yield next(self._infinite_iterator)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 634, in __next__
+    data = self._next_data()
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 678, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 51, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 51, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataset.py", line 196, in __getitem__
+    return tuple(tensor[index] for tensor in self.tensors)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataset.py", line 196, in <genexpr>
+    return tuple(tensor[index] for tensor in self.tensors)
+KeyboardInterrupt

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "main.py", line 126, in <module>
+    dataset = getattr(dataset_file, args.dataset)(args.data_dir, args.test_envs, hparams)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/dataset.py", line 596, in __init__
+    self.datasets.append(TensorDataset(x, y))
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataset.py", line 192, in __init__
+    assert all(tensors[0].size(0) == tensor.size(0) for tensor in tensors), "Size mismatch between tensors"
+AssertionError: Size mismatch between tensors

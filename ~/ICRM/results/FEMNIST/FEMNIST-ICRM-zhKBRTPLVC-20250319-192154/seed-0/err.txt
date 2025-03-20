@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/main.py", line 219, in <module>
+    step_metrics = algorithm.update(minibatches_device)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 88, in update
+    out = self.predict(x, y)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 290, in predict
+    y = y.reshape(bs, ctxt)
+RuntimeError: shape '[0, 100]' is invalid for input of size 52

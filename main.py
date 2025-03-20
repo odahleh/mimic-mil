@@ -21,6 +21,7 @@ import algorithms
 import warnings
 import string
 import datetime
+import os
 warnings.filterwarnings("ignore")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -28,7 +29,7 @@ print('=> Home device: {}'.format(device))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Domain generalization')
-    parser.add_argument('--data_dir', type=str, default ='~/data/')
+    parser.add_argument('--data_dir', type=str, default ='.')
     parser.add_argument('--dataset', type=str, default="FEMNIST")
     parser.add_argument('--algorithm', type=str, default="ERM")
     parser.add_argument('--hparams', type=str,

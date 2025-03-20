@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/main.py", line 189, in <module>
+    minibatches_device = [(x.to(device), y.to(device)) for x,y in next(train_minibatches_iterator)] # contains (x(e),y(e)) for all e where (x,y) are batches
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/utils.py", line 181, in __iter__
+    yield next(self._infinite_iterator)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 634, in __next__
+    data = self._next_data()
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataloader.py", line 678, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 51, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/_utils/fetch.py", line 51, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataset.py", line 196, in __getitem__
+    return tuple(tensor[index] for tensor in self.tensors)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/utils/data/dataset.py", line 196, in <genexpr>
+    return tuple(tensor[index] for tensor in self.tensors)
+KeyboardInterrupt

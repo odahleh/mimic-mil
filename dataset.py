@@ -18,6 +18,7 @@ from torchvision.transforms.functional import rotate
 from PIL import Image
 import os
 import re
+import pandas as pd
 from wilds.datasets.camelyon17_dataset import Camelyon17Dataset
 from wilds.datasets.fmow_dataset import FMoWDataset
 from wilds.datasets.rxrx1_dataset import RxRx1Dataset
@@ -29,7 +30,7 @@ import random
 logging.basicConfig(level=logging.INFO)
 
 
-DATASETS = ['FEMNIST', 'RareGroupRotatedMNIST', 'TinyImagenet', 'WILDSCamelyon', 'WILDSFMoW', 'PACS', 'TerraIncognita', 'DomainNet', 'ColoredMNIST', 'WILDSWaterbirds']
+DATASETS = ['FEMNIST', 'RareGroupRotatedMNIST', 'TinyImagenet', 'WILDSCamelyon', 'WILDSFMoW', 'PACS', 'TerraIncognita', 'DomainNet', 'ColoredMNIST', 'WILDSWaterbirds', 'MIMICCXR']
 
 def get_dataset_class(dataset_name):
     """Return the dataset class with the given name."""
@@ -541,3 +542,163 @@ class WILDSCamelyon(WILDSDataset):
         test_envs = [2]
         super().__init__(
             dataset, "hospital", valid_envs, test_envs, hparams['data_augmentation'], hparams)
+
+class MIMICCXR(MultipleDomainDataset):
+    """
+    MIMIC-CXR dataset for multi-instance learning on chest x-ray images
+    Each study is represented as a batch of DICOMs (context)
+    """
+    def __init__(self, root, test_envs, hparams):
+        if root is None:
+            raise ValueError('Data directory not specified!')
+        
+        self.seed = hparams.get('trial_seed', 0)
+        self.ctxt = hparams.get('context_length', 1)  # Max number of x-rays per study
+        self.datasets = []
+        
+        # Load metadata
+        metadata_path = Path(root) / 'metadata_no_finding_sample.csv'
+        self.metadata = pd.read_csv(metadata_path)
+        
+        # Group by study_id
+        studies = self.metadata.groupby('study_id')
+        
+        # Setup transforms
+        self.transform = transforms.Compose([
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485], std=[0.229])  # For grayscale images
+        ])
+        
+        # Split studies into train, val, test
+        all_studies = list(studies.groups.keys())
+        random.seed(self.seed)
+        random.shuffle(all_studies)
+        
+        n_studies = len(all_studies)
+        train_ratio, val_ratio = 0.7, 0.15
+        
+        n_train = int(n_studies * train_ratio)
+        n_val = int(n_studies * val_ratio)
+        
+        train_studies = all_studies[:n_train]
+        val_studies = all_studies[n_train:n_train+n_val]
+        test_studies = all_studies[n_train+n_val:]
+        
+        # Create datasets
+        self.train_cache_x, self.train_cache_y = [], []
+        self.domain_counts = {}
+        
+        for i, study_id in enumerate(train_studies):
+            study_data = studies.get_group(study_id)
+            x, y, domain_count, cache_x, cache_y = self.make_dataset(study_data, study_id)
+            self.domain_counts[study_id] = domain_count
+            self.datasets.append(TensorDataset(x, y))
+            self.train_cache_x.append(cache_x)
+            self.train_cache_y.append(cache_y)
+        
+        # Validation data
+        val_datasets = [self.make_dataset(studies.get_group(study_id), study_id, mode='val') for study_id in val_studies]
+        self.validation = [TensorDataset(x, y) for x, y, *_ in val_datasets]
+        validation_counts = [count for *_, count, _, _ in val_datasets]
+        self.valid_cache_x = [cache_x for *_, _, cache_x, _ in val_datasets]
+        self.valid_cache_y = [cache_y for *_, _, _, cache_y in val_datasets]
+        
+        # Test data
+        test_datasets = [self.make_dataset(studies.get_group(study_id), study_id, mode='test') for study_id in test_studies]
+        self.holdout_test = [TensorDataset(x, y) for x, y, *_ in test_datasets]
+        test_counts = [count for *_, count, _, _ in test_datasets]
+        self.test_cache_x = [cache_x for *_, _, cache_x, _ in test_datasets]
+        self.test_cache_y = [cache_y for *_, _, _, cache_y in test_datasets]
+        
+        print("=> n training domains: ", len(self.datasets))
+        print("=> Smallest domain: ", min(list(self.domain_counts.values())) if not hparams.get('is_iid_tr', 0) else 0)
+        print("=> Largest domain: ", max(list(self.domain_counts.values())) if not hparams.get('is_iid_tr', 0) else 0, "\n")
+        
+        print("=> n validation domains: ", len(self.validation))
+        print("=> Smallest domain: ", min(validation_counts) if validation_counts else 0)
+        print("=> Largest domain: ", max(validation_counts) if validation_counts else 0, "\n")
+        
+        print("=> n testing domains: ", len(self.holdout_test))
+        print("=> Smallest domain: ", min(test_counts) if test_counts else 0)
+        print("=> Largest domain: ", max(test_counts) if test_counts else 0, "\n")
+        
+        self.input_shape = (1, 224, 224)  # Grayscale images
+        self.num_classes = 1  # Binary classification
+    
+    def make_dataset(self, study_data, study_id, mode='train'):
+        """
+        Create a dataset for a single study (group of x-rays)
+        
+        Args:
+            study_data: DataFrame with data for this study
+            study_id: The study ID
+            mode: 'train', 'val', or 'test'
+            
+        Returns:
+            x: tensor of shape [n_images, C, H, W] or [1, n_images, C, H, W] for val/test
+            y: tensor of labels
+            domain_count: number of images in this study
+            cache_x: cached context images for ICRM
+            cache_y: cached context labels for ICRM
+        """
+        # Get paths and labels for this study
+        image_paths = study_data['path'].tolist()
+        labels = study_data['label'].tolist()
+        
+        # Ensure consistent label for the study
+        study_label = labels[0]
+        assert all(l == study_label for l in labels), f"Study {study_id} has inconsistent labels"
+        
+        # Determine number of images in this context
+        n_images = len(image_paths)
+        domain_count = n_images
+        
+        # Load and process images
+        processed_images = []
+        for path in image_paths[:self.ctxt]:  # Limit to context size
+            try:
+                img = Image.open(path).convert('L')  # Convert to grayscale
+                if self.transform:
+                    img = self.transform(img)
+                processed_images.append(img)
+            except Exception as e:
+                logging.warning(f"Error loading image {path}: {e}")
+        
+        # Pad if necessary
+        while len(processed_images) < self.ctxt:
+            # Pad with zeros
+            padding = torch.zeros_like(processed_images[0]) if processed_images else torch.zeros((1, 224, 224))
+            processed_images.append(padding)
+        
+        # Stack into a single tensor
+        x = torch.stack(processed_images)
+        y = torch.tensor([study_label], dtype=torch.long)
+        
+        # For validation and test, add an extra dimension
+        if mode != 'train':
+            x = x.unsqueeze(0)
+            y = y.unsqueeze(0)
+        
+        # For ICRM, create context cache
+        cache_x, cache_y = None, None
+        if self.ctxt > 1:
+            generator = torch.Generator().manual_seed(self.seed)
+            if len(processed_images) > self.ctxt - 1:
+                indices = torch.randint(0, len(processed_images), (self.ctxt-1,), generator=generator)
+                cache_x = torch.stack([processed_images[i] for i in indices]).unsqueeze(0)
+                cache_y = y.clone().repeat(self.ctxt-1, 1).unsqueeze(0)
+            else:
+                # If not enough images, just use what we have
+                cache_x = x[:(self.ctxt-1)].unsqueeze(0) if mode == 'train' else x[:, :(self.ctxt-1)]
+                cache_y = y.clone().repeat(self.ctxt-1 if self.ctxt > 1 else 1, 1).unsqueeze(0)
+        
+        return x, y, domain_count, cache_x, cache_y
+
+__datasets__ = {
+    'FEMNIST': FEMNIST,
+    'RareGroupRotatedMNIST': RareGroupRotatedMNIST,
+    'TinyImagenet': TinyImagenet,
+    'WILDSCamelyon': WILDSCamelyon,
+    'MIMICCXR': MIMICCXR
+}

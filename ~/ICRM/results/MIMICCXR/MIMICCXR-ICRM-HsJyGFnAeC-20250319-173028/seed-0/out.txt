@@ -1,0 +1,109 @@
+=> Environment:
+	Python: 3.8.20
+	PyTorch: 2.0.0+cu117
+	Torchvision: 0.15.0+cu117
+	CUDA: 11.7
+	CUDNN: 8500
+	NumPy: 1.24.4
+	PIL: 10.4.0
+=> Using small batch size (1) for testing
+=> Using small context length (3) for testing
+=> HParams:
+	additonal_metrics: ['worst_group', 'average']
+	batch_size: 1
+	beta1: 0.5
+	context_length: 3
+	data_augmentation: True
+	densenet121: False
+	device: cuda
+	freeze_bn: 1
+	is_iid_tr: 0
+	is_parallel: True
+	is_supervised: 0
+	is_transformer: 0
+	loss: cross_entropy
+	lr: 0.0001
+	metrics: ['acc']
+	n_embd: 132
+	n_head: 3
+	n_layer: 12
+	n_sampled_tasks: 0
+	nonlinear_classifier: False
+	num_features: 3
+	optimizer_name: Adam
+	output_dir: ~/ICRM/results/MIMICCXR/MIMICCXR-ICRM-HsJyGFnAeC-20250319-173028/seed-0
+	overall_seed: 0
+	print_last: 1
+	resnet18: False
+	resnet_dropout: 0
+	terminal_command: main.py --dataset MIMICCXR --algorithm ICRM --small_batch --small_context
+	test_batch_size: 1
+	trial_seed: 0
+	weight_decay: 0.0
+=> Seed of the run set to 0
+=> Creating dataset object...
+=> Loaded metadata with 1001 rows
+=> Found 12 stratification groups: ['0_1' '0_0' '0_3' '0_4' '0_2' '1_1' '1_2' '0_5' '1_3' '1_0' '1_5' '1_4']
+  => Added environment with 134 studies
+  => Added environment with 170 studies
+  => Added environment with 34 studies
+  => Added environment with 49 studies
+  => Added environment with 28 studies
+  => Added environment with 55 studies
+  => Added environment with 18 studies
+  => Added environment with 38 studies
+  => Added environment with 27 studies
+  => Added environment with 59 studies
+  => Added environment with 53 studies
+  => Added environment with 29 studies
+=> n training environments:  12
+=> Training environment sizes:  [134, 170, 34, 49, 28, 55, 18, 38, 27, 59, 53, 29]
+=> n validation environments:  12
+=> Validation environment sizes:  [28, 36, 7, 10, 6, 11, 4, 8, 5, 12, 11, 6]
+=> n testing environments:  12
+=> Testing environment sizes:  [30, 38, 8, 11, 7, 13, 5, 9, 7, 14, 13, 7]
+=> Dataset initialization complete!
+=> Dataset object created successfully
+=> Creating training data loaders...
+=> Number of environments: 12
+=> Environment sizes: [134, 170, 34, 49, 28, 55, 18, 38, 27, 59, 53, 29]
+=> Batch size: 1
+=> Number of workers: 4
+=> All training loaders created successfully
+=> Creating validation data loaders...
+=> Validation loaders created successfully
+instantiating algorithm
+=> Training ResNet architecture...
+=> Training ResNet with frozen batch norm...
+=> Initializing a GPT2 Transformer...
+=> Using data parallel
+training
+=> Checkpointing based on acc(e-0)
+Traceback (most recent call last):
+  File "main.py", line 227, in <module>
+    val_metric_results = algorithm.evaluate(loader, cache = validation_cache[index])
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 459, in evaluate
+    result = self._evaluate_robust(self.network, loader, self.hparams['metrics'], cache)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 406, in _evaluate_robust
+    p, _ = self.predict(x, y, return_context=True, past_key_values=initial_past)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/algorithms.py", line 348, in predict
+    outputs = self.classifier((x, y, None, past_key_values))
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/healthy-ml/scratch/odahleh/mimic-mil/networks.py", line 196, in forward
+    outputs = self._backbone(inputs_embeds=embeds, past_key_values=past_key_values)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/transformers/models/gpt2/modeling_gpt2.py", line 1132, in forward
+    outputs = block(
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/transformers/models/gpt2/modeling_gpt2.py", line 615, in forward
+    attn_outputs = self.attn(
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/transformers/models/gpt2/modeling_gpt2.py", line 332, in forward
+    attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
+  File "/data/healthy-ml/scratch/odahleh/anaconda3/envs/icrm/lib/python3.8/site-packages/transformers/models/gpt2/modeling_gpt2.py", line 203, in _attn
+    attn_weights = torch.where(causal_mask, attn_weights.to(attn_weights.dtype), mask_value)
+RuntimeError: The size of tensor a (3) must match the size of tensor b (6) at non-singleton dimension 3
